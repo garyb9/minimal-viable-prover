@@ -5,8 +5,31 @@ use ff::Field;
 
 pub const N: u64 = 1 << 17; // 2**17
 
-pub fn generate_srs() -> Vec<G1Projective> {
-    let tau_group: Vec<Scalar> = generate_random_tau_group();
+pub fn convert_to_lagrange_basis(tau_group: &Vec<Scalar>, g_srs: &Vec<G1Projective>) -> Vec<G1Projective> {
+    let mut lagrange_basis: Vec<G1Projective> = Vec::new();
+
+    for (i, &x) in tau_group.iter().enumerate() {
+        let mut numerator: G1Projective = G1Projective::identity();
+        let mut denominator: Scalar = Scalar::one();
+
+        for (j, &x_j) in tau_group.iter().enumerate() {
+            if i != j {
+                let delta: Scalar = x - x_j;
+                numerator += g_srs[j] * delta;
+                denominator *= x - x_j;
+            }
+        }
+
+        let lagrange_coefficient: G1Projective = numerator * denominator.invert().unwrap();
+        lagrange_basis.push(lagrange_coefficient);
+        println!("Lagrange Coefficient {:?} computed as: {:?}", i, lagrange_coefficient);
+    }
+
+    lagrange_basis
+}
+
+pub fn generate_srs(tau_group: &Vec<Scalar>) -> Vec<G1Projective> {
+    // let tau_group: Vec<Scalar> = generate_random_tau_group();
     let random_group_element: G1Projective = generate_random_point_on_curve();
     let mut g_srs: Vec<G1Projective> = Vec::new();
 

@@ -22,13 +22,7 @@ fn main() {
 
     println!("N = {:?}", setup::N);
 
-    // Generate a random scalar
-    let random_scalar = setup::generate_random_scalar();
-    println!("Random Scalar: {:?}", random_scalar);
-
-    // Generate a random point on the BLS12-381 curve
-    let random_point = setup::generate_random_point_on_curve();
-    println!("Random Point on Curve: {:?}", random_point);
-
-    setup::generate_srs();
+    let tau_group: Vec<bls12_381::Scalar> = setup::generate_random_tau_group();
+    let g_srs: Vec<bls12_381::G1Projective> = setup::generate_srs(&tau_group);
+    let lagrange_basis: Vec<bls12_381::G1Projective> = setup::convert_to_lagrange_basis(&tau_group, &g_srs);
 }

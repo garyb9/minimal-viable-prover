@@ -5,6 +5,29 @@ use ff::Field;
 
 pub const N: u64 = 1 << 17; // 2**17
 
+pub fn setup_for_prover() -> (Vec<G1Projective> , Vec<Scalar>) {
+    let tau_group: Vec<bls12_381::Scalar> = generate_random_tau_group();
+    let g_srs: Vec<bls12_381::G1Projective> = generate_srs(&tau_group);
+    let lagrange_basis: Vec<bls12_381::G1Projective> = convert_to_lagrange_basis(&tau_group, &g_srs);
+    let polynomial: Vec<bls12_381::Scalar> = generate_random_polynomial();
+    (lagrange_basis, polynomial)
+}
+
+pub fn generate_random_polynomial() -> Vec<Scalar> {
+    let mut polynomial: Vec<Scalar> = Vec::new();
+
+    // Iterate from 0 to 2*N - 1
+    let size: u64 = 2*N-1;
+    for i in 0..(2 * N) {
+        let curr: Scalar = generate_random_scalar();
+        polynomial.push(curr);
+        println!("{:?}/{:?}: Adding (C_{:?})={:?} coefficient to polynomical in Fr", i, size, i, curr);
+    }
+    println!("Done generating Polynomial");
+    polynomial
+
+}
+
 pub fn convert_to_lagrange_basis(tau_group: &Vec<Scalar>, g_srs: &Vec<G1Projective>) -> Vec<G1Projective> {
     let mut lagrange_basis: Vec<G1Projective> = Vec::new();
 

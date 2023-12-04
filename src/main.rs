@@ -4,8 +4,10 @@
 mod setup;
 
 fn main() {
-    // // Prover knows the secret
-    // let secret = 7;
+    // Prover gets the setup
+    let for_prover: (Vec<bls12_381::G1Projective>, Vec<bls12_381::Scalar>) = setup::setup_for_prover();
+    let lagrange_basis: Vec<bls12_381::G1Projective> = for_prover.0;
+    let polynomial: Vec<bls12_381::Scalar> = for_prover.1;
 
     // // Prover generates commitment and response
     // let (commitment, response) = prover(secret);
@@ -18,11 +20,6 @@ fn main() {
     //     println!("Proof verified: Prover knows the secret.");
     // } else {
     //     println!("Proof not verified: Prover does not know the secret.");
-    // }
-
-    println!("N = {:?}", setup::N);
-
-    let tau_group: Vec<bls12_381::Scalar> = setup::generate_random_tau_group();
-    let g_srs: Vec<bls12_381::G1Projective> = setup::generate_srs(&tau_group);
-    let lagrange_basis: Vec<bls12_381::G1Projective> = setup::convert_to_lagrange_basis(&tau_group, &g_srs);
+    // }    
+    
 }
